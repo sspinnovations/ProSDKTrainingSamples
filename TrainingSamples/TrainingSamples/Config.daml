@@ -28,7 +28,7 @@
       </groups>
       <controls>
         <!-- add your controls here -->
-        <button id="TrainingSamples_Button1" caption="Button 1" className="Button1" loadOnClick="true" condition="esri_mapping_utilityNetworkCondition"
+        <button id="TrainingSamples_Button1" caption="Button 1" className="FindUtilityNetwork" loadOnClick="true" condition="esri_mapping_utilityNetworkCondition"
                 smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>

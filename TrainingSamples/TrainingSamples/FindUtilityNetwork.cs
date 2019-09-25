@@ -23,9 +23,9 @@ namespace TrainingSamples
     {
         protected override async void OnClick()
         {
-            string unLayerName = "UtilityNetwork";
+            string unLayerName = "Utility Network";
             Layer unLayer = await GetLayerByName(MapView.Active.Map, unLayerName);
-            UtilityNetwork utilityNetwork = GetUNByLayer(unLayer);
+            UtilityNetwork utilityNetwork = await GetUNByLayer(unLayer);
         }
 
         public Task<Layer> GetLayerByName(Map map, string name)
@@ -42,37 +42,40 @@ namespace TrainingSamples
             });
         }
 
-        public UtilityNetwork GetUNByLayer(Layer layer)
+        public Task<UtilityNetwork> GetUNByLayer(Layer layer)
         {
-            if (layer is FeatureLayer)
+            return QueuedTask.Run(() =>
             {
-                FeatureLayer featureLayer = layer as FeatureLayer;
-                using (FeatureClass featureClass = featureLayer.GetFeatureClass())
+                if (layer is FeatureLayer)
                 {
-                    if (featureClass.IsControllerDatasetSupported())
+                    FeatureLayer featureLayer = layer as FeatureLayer;
+                    using (FeatureClass featureClass = featureLayer.GetFeatureClass())
                     {
-                        IReadOnlyList<Dataset> datasets = featureClass.GetControllerDatasets();
-                        foreach (var dataset in datasets)
+                        if (featureClass.IsControllerDatasetSupported())
                         {
-                            if (dataset is UtilityNetwork)
+                            IReadOnlyList<Dataset> datasets = featureClass.GetControllerDatasets();
+                            foreach (var dataset in datasets)
                             {
-                                return dataset as UtilityNetwork;
-                            }
-                            else
-                            {
-                                dataset.Dispose();
+                                if (dataset is UtilityNetwork)
+                                {
+                                    return dataset as UtilityNetwork;
+                                }
+                                else
+                                {
+                                    dataset.Dispose();
+                                }
                             }
                         }
                     }
                 }
-            }
-            else if (layer is UtilityNetworkLayer)
-            {
-                UtilityNetworkLayer utilityNetworkLayer = layer as UtilityNetworkLayer;
-                return utilityNetworkLayer.GetUtilityNetwork();
-            }
+                else if (layer is UtilityNetworkLayer)
+                {
+                    UtilityNetworkLayer utilityNetworkLayer = layer as UtilityNetworkLayer;
+                    return utilityNetworkLayer.GetUtilityNetwork();
+                }
 
-            return null;
+                return null;
+            });
         }
     }
 }
