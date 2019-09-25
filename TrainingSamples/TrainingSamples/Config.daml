@@ -15,7 +15,7 @@
       <!-- uncomment to have the control hosted on a separate tab-->
       <tabs>
         <tab id="TrainingSamples_Tab1" caption="New Tab">
-          <group refID="TrainingSamples_Group1"/>
+          <group refID="TrainingSamples_Group1" />
         </tab>
       </tabs>
       <groups>
@@ -23,13 +23,16 @@
               an empty group-->
         <group id="TrainingSamples_Group1" caption="Group 1" appearsOnAddInTab="false">
           <!-- host controls within groups -->
-          <button refID="TrainingSamples_Button1" size="large" />
+          <button refID="TrainingSamples_FindUtilityNetwork" size="large" />
+          <button refID="TrainingSamples_ShowUNDefinition" size="large" />
         </group>
       </groups>
       <controls>
         <!-- add your controls here -->
-        <button id="TrainingSamples_Button1" caption="Button 1" className="FindUtilityNetwork" loadOnClick="true" condition="esri_mapping_utilityNetworkCondition"
-                smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
+        <button id="TrainingSamples_FindUtilityNetwork" caption="Find Utility Network" className="FindUtilityNetwork" loadOnClick="true" condition="esri_mapping_utilityNetworkCondition" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </button>
+        <button id="TrainingSamples_ShowUNDefinition" caption="Show UN Definition" className="ShowUNDefinition" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
       </controls>
