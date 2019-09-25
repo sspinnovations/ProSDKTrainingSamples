@@ -1,12 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ArcGIS defaultAssembly="TrainingSamples.dll"
-        defaultNamespace="TrainingSamples"
-        xmlns="http://schemas.esri.com/DADF/Registry"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
-
+﻿<ArcGIS defaultAssembly="TrainingSamples.dll" defaultNamespace="TrainingSamples" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
   <AddInInfo id="{c85f9725-22aa-4c52-8cd3-9638bcb746d4}" version="1.0" desktopVersion="2.3.15769">
-    <Name>TrainingSamples</Name>   
+    <Name>TrainingSamples</Name>
     <Description>TrainingSamples description</Description>
     <Image>Images\AddinDesktop32.png</Image>
     <Author>jrowsell</Author>
@@ -16,28 +10,29 @@
     <!-- Note subject can be one or more of these topics:
                     Content, Framework, Editing, Geodatabase, Geometry, Geoprocessing, Layouts, Map Authoring, Map Exploration -->
   </AddInInfo>
-
   <modules>
     <insertModule id="TrainingSamples_Module" className="Module1" autoLoad="false" caption="Module1">
       <!-- uncomment to have the control hosted on a separate tab-->
       <tabs>
-        <!--<tab id="TrainingSamples_Tab1" caption="New Tab">
+        <tab id="TrainingSamples_Tab1" caption="New Tab">
           <group refID="TrainingSamples_Group1"/>
-        </tab>-->
+        </tab>
       </tabs>
-              
       <groups>
         <!-- comment this out if you have no controls on the Addin tab to avoid
               an empty group-->
-        <group id="TrainingSamples_Group1" caption="Group 1" appearsOnAddInTab="true">
+        <group id="TrainingSamples_Group1" caption="Group 1" appearsOnAddInTab="false">
           <!-- host controls within groups -->
+          <button refID="TrainingSamples_Button1" size="large" />
         </group>
       </groups>
-      
       <controls>
         <!-- add your controls here -->
-      </controls> 
-      
+        <button id="TrainingSamples_Button1" caption="Button 1" className="Button1" loadOnClick="true" condition="esri_mapping_utilityNetworkCondition"
+                smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </button>
+      </controls>
     </insertModule>
   </modules>
 </ArcGIS>
