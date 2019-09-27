@@ -25,6 +25,7 @@
           <!-- host controls within groups -->
           <button refID="TrainingSamples_FindUtilityNetwork" size="large" />
           <button refID="TrainingSamples_ShowUNDefinition" size="large" />
+          <button refID="TrainingSamples_ValidateTopology" size="large" />
         </group>
       </groups>
       <controls>
@@ -33,6 +34,9 @@
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
         <button id="TrainingSamples_ShowUNDefinition" caption="Show UN Definition" className="ShowUNDefinition" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </button>
+        <button id="TrainingSamples_ValidateTopology" caption="ValidateTopology" className="ValidateTopology" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
       </controls>

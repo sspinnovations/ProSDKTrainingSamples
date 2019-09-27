@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork;
+using ArcGIS.Core.Data.UtilityNetwork.Extensions;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Catalog;
 using ArcGIS.Desktop.Core;
@@ -19,34 +20,47 @@ using ArcGIS.Desktop.Mapping;
 
 namespace TrainingSamples
 {
-    internal class ShowUNDefinition : Button
+    internal class ValidateTopology : Button
     {
         protected override async void OnClick()
         {
             string unLayerName = "ElectricUtilityNetwork Utility Network";
+            string domainNetworkName = "ElectricTransmission";
+            string tierName = "AC High Voltage";
             Layer unLayer = await GetLayerByName(MapView.Active.Map, unLayerName);
             UtilityNetwork utilityNetwork = await GetUNByLayer(unLayer);
-            string unDefInfo = await QueuedTask.Run(() =>
+            
+            await QueuedTask.Run(() =>
             {
-                string result = $"Domain Networks: {Environment.NewLine}";
-                UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
-                IReadOnlyList<DomainNetwork> domainNetworks = utilityNetworkDefinition.GetDomainNetworks();
-                if (domainNetworks != null)
+                using (UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition())
                 {
-                    foreach (DomainNetwork domainNetwork in domainNetworks)
+                    DomainNetwork domainNetwork = utilityNetworkDefinition.GetDomainNetwork(domainNetworkName);
+                    Tier tier = domainNetwork.GetTier(tierName);
+
+                    using (SubnetworkManager subnetworkManager = utilityNetwork.GetSubnetworkManager())
                     {
-                        result += $"{domainNetwork.Name}{Environment.NewLine}";
+                        Subnetwork firstCleanSubnetwork = subnetworkManager.GetSubnetworks(tier, SubnetworkStates.Clean).FirstOrDefault();
+                        try
+                        {
+                            if (firstCleanSubnetwork != null)
+                            {
+                                SubnetworkController subnetworkController = firstCleanSubnetwork.GetControllers().First();
+                                subnetworkManager.DisableControllerInEditOperation(subnetworkController.Element);
+                                firstCleanSubnetwork.Update();
+
+                                // Redraw map and clear cache
+                                MapView.Active.Redraw(true);
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
+                        
                     }
                 }
-                else
-                {
-                    result += "No domain networks found";
-                }
-
-                return result;
+                // utilityNetwork.ValidateNetworkTopology();
             });
-
-            MessageBox.Show(unDefInfo);
         }
 
         public Task<Layer> GetLayerByName(Map map, string name)
