@@ -28,25 +28,29 @@ namespace TrainingSamples
             UtilityNetwork utilityNetwork = await GetUNByLayer(unLayer);
             string unDefInfo = await QueuedTask.Run(() =>
             {
-                string result = $"Domain Networks: {Environment.NewLine}";
                 UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
 
-                var attrs = utilityNetworkDefinition.GetNetworkAttributes();
-                var msg = string.Empty;
-                foreach (var attr in attrs)
+                /* Uncomment to print out the network attributes in the utlity network
+                IReadOnlyList<NetworkAttribute> networkAttributes = utilityNetworkDefinition.GetNetworkAttributes();
+                string attributesMessage = "Network attributes: " + Environment.NewLine;
+                foreach (var networkAttribute in networkAttributes)
                 {
-                    msg += attr.Name + Environment.NewLine;
+                    attributesMessage += networkAttribute.Name + Environment.NewLine;
                 }
-                MessageBox.Show(msg);
+                MessageBox.Show(attributesMessage);
+                */
 
-                var categories = utilityNetworkDefinition.GetAvailableCategories();
-                var cats = string.Empty;
+                /* Uncomment to print out the categories in the utlity network
+                IReadOnlyList<string> categories = utilityNetworkDefinition.GetAvailableCategories();
+                string categoriesMsg = "Categories: " + Environment.NewLine;
                 foreach (var category in categories)
                 {
-                    cats += category + Environment.NewLine;
+                    categoriesMsg += category + Environment.NewLine;
                 }
-                MessageBox.Show(cats);
+                MessageBox.Show(categoriesMsg);
+                */
 
+                string result = $"Domain Networks: {Environment.NewLine}";
                 IReadOnlyList<DomainNetwork> domainNetworks = utilityNetworkDefinition.GetDomainNetworks();
                 if (domainNetworks != null)
                 {
