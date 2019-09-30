@@ -23,13 +23,30 @@ namespace TrainingSamples
     {
         protected override async void OnClick()
         {
-            string unLayerName = "ElectricUtilityNetwork Utility Network";
+            string unLayerName = "UtilityNetwork Utility Network";
             Layer unLayer = await GetLayerByName(MapView.Active.Map, unLayerName);
             UtilityNetwork utilityNetwork = await GetUNByLayer(unLayer);
             string unDefInfo = await QueuedTask.Run(() =>
             {
                 string result = $"Domain Networks: {Environment.NewLine}";
                 UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
+
+                var attrs = utilityNetworkDefinition.GetNetworkAttributes();
+                var msg = string.Empty;
+                foreach (var attr in attrs)
+                {
+                    msg += attr.Name + Environment.NewLine;
+                }
+                MessageBox.Show(msg);
+
+                var categories = utilityNetworkDefinition.GetAvailableCategories();
+                var cats = string.Empty;
+                foreach (var category in categories)
+                {
+                    cats += category + Environment.NewLine;
+                }
+                MessageBox.Show(cats);
+
                 IReadOnlyList<DomainNetwork> domainNetworks = utilityNetworkDefinition.GetDomainNetworks();
                 if (domainNetworks != null)
                 {
@@ -93,6 +110,18 @@ namespace TrainingSamples
                 {
                     UtilityNetworkLayer utilityNetworkLayer = layer as UtilityNetworkLayer;
                     return utilityNetworkLayer.GetUtilityNetwork();
+                }
+                else if (layer is SubtypeGroupLayer)
+                {
+                    CompositeLayer compositeLayer = layer as CompositeLayer;
+                    foreach (var subLayer in compositeLayer.Layers)
+                    {
+                        if (subLayer is UtilityNetworkLayer)
+                        {
+                            UtilityNetworkLayer unLayer = subLayer as UtilityNetworkLayer;
+                            return unLayer.GetUtilityNetwork();
+                        }
+                    }
                 }
 
                 return null;

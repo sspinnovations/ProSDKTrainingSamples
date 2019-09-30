@@ -24,7 +24,7 @@ namespace TrainingSamples
     {
         protected override async void OnClick()
         {
-            string unLayerName = "ElectricUtilityNetwork Utility Network";
+            string unLayerName = "UtilityNetwork Utility Network";
             string domainNetworkName = "ElectricTransmission";
             string tierName = "AC High Voltage";
             Layer unLayer = await GetLayerByName(MapView.Active.Map, unLayerName);

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork;
+using ArcGIS.Core.Data.UtilityNetwork.Trace;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Catalog;
 using ArcGIS.Desktop.Core;
@@ -19,13 +20,56 @@ using ArcGIS.Desktop.Mapping;
 
 namespace TrainingSamples
 {
-    internal class FindUtilityNetwork : Button
+    internal class NetworkTrace : Button
     {
         protected override async void OnClick()
         {
             string unLayerName = "UtilityNetwork Utility Network";
             Layer unLayer = await GetLayerByName(MapView.Active.Map, unLayerName);
             UtilityNetwork utilityNetwork = await GetUNByLayer(unLayer);
+            await QueuedTask.Run(() =>
+            {
+                UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
+                DomainNetwork domainNetwork = utilityNetworkDefinition.GetDomainNetwork("ElectricTransmission");
+                Tier tier = domainNetwork.GetTier("AC High Voltage");
+                using (SubnetworkManager subnetworkManager = utilityNetwork.GetSubnetworkManager())
+                {
+                    using (TraceManager traceManager = utilityNetwork.GetTraceManager())
+                    {
+                        ConnectedTracer downstreamTracer = traceManager.GetTracer<ConnectedTracer>();
+                        IReadOnlyList<Subnetwork> subnetworks = subnetworkManager.GetSubnetworks(tier, SubnetworkStates.Dirty);
+
+                        SubnetworkController subnetworkController = subnetworks.First().GetControllers().First();
+                        Element subnetworkElement = subnetworkController.Element;
+
+                        TraceArgument traceArgument = new TraceArgument(new List<Element> { subnetworkElement });
+                        TraceConfiguration traceConfiguration = new TraceConfiguration();
+
+                        traceConfiguration.DomainNetwork = domainNetwork;
+
+                        NetworkAttribute currentPhase = utilityNetworkDefinition.GetNetworkAttribute("Transmission Phases Current");
+                        NetworkAttributeComparison phaseComparison = new NetworkAttributeComparison(currentPhase, Operator.IncludesTheValues, 3);
+                        traceConfiguration.Traversability.Barriers = phaseComparison;
+
+                        traceConfiguration.OutputCondition = new CategoryComparison(CategoryOperator.IsEqual, "Subnetwork Controller");
+
+                        NetworkAttribute tierRank = utilityNetworkDefinition.GetNetworkAttribute("Tier rank");
+                        Function maxTierRank = new Max(tierRank);
+                        traceConfiguration.Functions = new List<Function> { maxTierRank };
+
+                        traceArgument.Configuration = traceConfiguration;
+                        IReadOnlyList<Result> traceResults = downstreamTracer.Trace(traceArgument);
+
+                        FunctionOutputResult functionOutputResult = traceResults.OfType<FunctionOutputResult>().First();
+                        FunctionOutput functionOutput = functionOutputResult.FunctionOutputs.First();
+                        string maxTierOutput = functionOutput.Value.ToString();
+
+                        ElementResult elementResult = traceResults.OfType<ElementResult>().First();
+                        MessageBox.Show($"Total connected devices: {elementResult.Elements.Count}{Environment.NewLine}" 
+                            + $"Max tier rank: {maxTierOutput}");
+                    }
+                }
+            });
         }
 
         public Task<Layer> GetLayerByName(Map map, string name)
