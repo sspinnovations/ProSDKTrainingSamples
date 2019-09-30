@@ -124,6 +124,7 @@
     <AddInContent Include="DarkImages\AddInDesktop32.png" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NetworkDiagram.cs" />
     <Compile Include="NetworkTrace.cs" />
     <Compile Include="ShowUNDefinition.cs" />
     <Compile Include="FindUtilityNetwork.cs" />
