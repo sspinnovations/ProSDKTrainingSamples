@@ -27,7 +27,7 @@
           <button refID="TrainingSamples_ShowUNDefinition" size="large" />
           <button refID="TrainingSamples_ValidateTopology" size="large" />
           <button refID="TrainingSamples_NetworkTrace" size="large" />
-          <button refID="TrainingSamples_NetworkDiagram" size="large" />
+          <button refID="TrainingSamples_NetworkDiagramBtn" size="large" />
         </group>
       </groups>
       <controls>
@@ -44,7 +44,7 @@
         <button id="TrainingSamples_NetworkTrace" caption="NetworkTrace" className="NetworkTrace" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
-        <button id="TrainingSamples_NetworkDiagram" caption="NetworkDiagram" className="NetworkDiagram" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
+        <button id="TrainingSamples_NetworkDiagramBtn" caption="NetworkDiagramBtn" className="NetworkDiagramBtn" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
       </controls>

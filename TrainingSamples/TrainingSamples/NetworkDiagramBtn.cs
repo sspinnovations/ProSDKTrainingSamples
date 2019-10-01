@@ -20,52 +20,77 @@ using ArcGIS.Desktop.Mapping;
 
 namespace TrainingSamples
 {
-    internal class NetworkDiagram : Button
+    internal class NetworkDiagramBtn : Button
     {
         protected override async void OnClick()
         {
-            string unLayerName = "UtilityNetwork Utility Network";
+            string unLayerName = "Electric Utility Network";
             Map activeMap = MapView.Active.Map;
             Layer unLayer = await GetLayerByName(activeMap, unLayerName);
             UtilityNetwork utilityNetwork = await GetUNByLayer(unLayer);
 
-            await QueuedTask.Run(() =>
+            DiagramLayer diagramLayer = await QueuedTask.Run(() =>
             {
                 using (DiagramManager diagramManager = utilityNetwork.GetDiagramManager())
                 {
                     // Get selected global ids on the desired layer
-                    string layerName = "TODO";
-                    List<Guid> globalIds = GetSelectionGlobalIds(activeMap, layerName);
+                    List<string> layerNames = new List<string>
+                    {
+                        "Transformer",
+                        "Service Point"
+                    };
+                    
+                    List<Guid> globalIds = GetSelectionGlobalIds(activeMap, layerNames);
 
-                    DiagramTemplate diagramTemplate = diagramManager.GetDiagramTemplate("TODO");
+                    DiagramTemplate diagramTemplate = diagramManager.GetDiagramTemplate("CollapseContainers");
                     NetworkDiagram networkDiagram = diagramManager.CreateNetworkDiagram(diagramTemplate, globalIds);
+
+                    SmartTreeDiagramLayoutParameters diagramLayoutParameters = new SmartTreeDiagramLayoutParameters();
+                    diagramLayoutParameters.Direction = SmartTreeDiagramLayoutParameters.TreeDirection.FromTopToBottom;
+                    networkDiagram.ApplyLayout(diagramLayoutParameters);
+                    
+                    // Create the diagram map
+                    var newMap = MapFactory.Instance.CreateMap(networkDiagram.Name, MapType.NetworkDiagram, MapViewingMode.Map);
+                    if (newMap == null)
+                        return null;
+
+                    // Open the diagram map
+                    var mapPane = ArcGIS.Desktop.Core.ProApp.Panes.CreateMapPaneAsync(newMap, MapViewingMode.Map);
+                    if (mapPane == null)
+                        return null;
+
+                    //Add the diagram to the map
+                    return newMap.AddDiagramLayer(networkDiagram);
                 }
             });
         }
 
-        private static List<Guid> GetSelectionGlobalIds(Map activeMap, string layerName)
+        private static List<Guid> GetSelectionGlobalIds(Map activeMap, List<string> layerNames)
         {
             List<Guid> globalIds = new List<Guid>();
 
             Dictionary<MapMember, List<long>> mapSelection = activeMap.GetSelection();
-            MapMember desiredMapMember = mapSelection.Keys.Where(mm => mm.Name == layerName).First();
-            List<long> objectIds = mapSelection[desiredMapMember];
-            FeatureLayer featureLayer = desiredMapMember as FeatureLayer;
+            IEnumerable<MapMember> desiredMapMembers = mapSelection.Keys.Where(mm => layerNames.Contains(mm.Name));
 
-            QueryFilter queryFilter = new QueryFilter
+            foreach (MapMember mapMember in desiredMapMembers)
             {
-                ObjectIDs = objectIds
-            };
-            
-            using (RowCursor rowCursor = featureLayer.Search(queryFilter))
-            {
-                while (rowCursor.MoveNext())
+                List<long> objectIds = mapSelection[mapMember];
+                FeatureLayer featureLayer = mapMember as FeatureLayer;
+
+                QueryFilter queryFilter = new QueryFilter
                 {
-                    Row row = rowCursor.Current;
-                    globalIds.Add(new Guid(row["GLOBALID"].ToString()));
+                    ObjectIDs = objectIds
+                };
+
+                using (RowCursor rowCursor = featureLayer.Search(queryFilter))
+                {
+                    while (rowCursor.MoveNext())
+                    {
+                        Row row = rowCursor.Current;
+                        globalIds.Add(new Guid(row["GLOBALID"].ToString()));
+                    }
                 }
             }
-
             return globalIds;
         }
 
