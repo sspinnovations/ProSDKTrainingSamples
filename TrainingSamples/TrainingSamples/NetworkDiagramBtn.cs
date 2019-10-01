@@ -37,7 +37,8 @@ namespace TrainingSamples
                     List<string> layerNames = new List<string>
                     {
                         "Transformer",
-                        "Service Point"
+                        "Service Point",
+                        "Low Voltage"
                     };
                     
                     List<Guid> globalIds = GetSelectionGlobalIds(activeMap, layerNames);
