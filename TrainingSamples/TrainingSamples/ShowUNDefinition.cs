@@ -23,51 +23,55 @@ namespace TrainingSamples
     {
         protected override async void OnClick()
         {
-            string unLayerName = "Electric Utility Network";
-            Layer unLayer = await GetLayerByName(MapView.Active.Map, unLayerName);
-            UtilityNetwork utilityNetwork = await GetUNByLayer(unLayer);
-            string unDefInfo = await QueuedTask.Run(() =>
+            try
             {
-                UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
-
-                /* Uncomment to print out the network attributes in the utlity network
-                IReadOnlyList<NetworkAttribute> networkAttributes = utilityNetworkDefinition.GetNetworkAttributes();
-                string attributesMessage = "Network attributes: " + Environment.NewLine;
-                foreach (var networkAttribute in networkAttributes)
+                string unLayerName = "Electric Utility Network";
+                Layer unLayer = await GetLayerByName(MapView.Active.Map, unLayerName);
+                UtilityNetwork utilityNetwork = await GetUNByLayer(unLayer);
+                QueuedTask.Run(() =>
                 {
-                    attributesMessage += networkAttribute.Name + Environment.NewLine;
-                }
-                MessageBox.Show(attributesMessage);
-                */
+                    UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
 
-                /* Uncomment to print out the categories in the utlity network
-                IReadOnlyList<string> categories = utilityNetworkDefinition.GetAvailableCategories();
-                string categoriesMsg = "Categories: " + Environment.NewLine;
-                foreach (var category in categories)
-                {
-                    categoriesMsg += category + Environment.NewLine;
-                }
-                MessageBox.Show(categoriesMsg);
-                */
-
-                string result = $"Domain Networks: {Environment.NewLine}";
-                IReadOnlyList<DomainNetwork> domainNetworks = utilityNetworkDefinition.GetDomainNetworks();
-                if (domainNetworks != null)
-                {
-                    foreach (DomainNetwork domainNetwork in domainNetworks)
+                    /* Uncomment to print out the network attributes in the utlity network
+                    IReadOnlyList<NetworkAttribute> networkAttributes = utilityNetworkDefinition.GetNetworkAttributes();
+                    string attributesMessage = "Network attributes: " + Environment.NewLine;
+                    foreach (var networkAttribute in networkAttributes)
                     {
-                        result += $"{domainNetwork.Name}{Environment.NewLine}";
+                        attributesMessage += networkAttribute.Name + Environment.NewLine;
                     }
-                }
-                else
-                {
-                    result += "No domain networks found";
-                }
+                    MessageBox.Show(attributesMessage);
+                    */
 
-                return result;
-            });
+                    /* Uncomment to print out the categories in the utlity network
+                    IReadOnlyList<string> categories = utilityNetworkDefinition.GetAvailableCategories();
+                    string categoriesMsg = "Categories: " + Environment.NewLine;
+                    foreach (var category in categories)
+                    {
+                        categoriesMsg += category + Environment.NewLine;
+                    }
+                    MessageBox.Show(categoriesMsg);
+                    */
 
-            MessageBox.Show(unDefInfo);
+                    string result = $"Domain Networks: {Environment.NewLine}";
+                    IReadOnlyList<DomainNetwork> domainNetworks = utilityNetworkDefinition.GetDomainNetworks();
+                    if (domainNetworks != null)
+                    {
+                        foreach (DomainNetwork domainNetwork in domainNetworks)
+                        {
+                            result += $"{domainNetwork.Name}{Environment.NewLine}";
+                        }
+                    }
+                    else
+                    {
+                        result += "No domain networks found";
+                    }
+                    MessageBox.Show(result);
+                }).Wait();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An exception occurred: {ex.Message}");
+            }
         }
 
         public Task<Layer> GetLayerByName(Map map, string name)

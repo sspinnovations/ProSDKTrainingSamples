@@ -24,43 +24,52 @@ namespace TrainingSamples
     {
         protected override async void OnClick()
         {
-            string unLayerName = "Electric Utility Network";
-            string domainNetworkName = "ElectricTransmission";
-            string tierName = "AC High Voltage";
-            Layer unLayer = await GetLayerByName(MapView.Active.Map, unLayerName);
-            UtilityNetwork utilityNetwork = await GetUNByLayer(unLayer);
-            
-            await QueuedTask.Run(() =>
+            try
             {
-                using (UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition())
+                string unLayerName = "Electric Utility Network";
+                string domainNetworkName = "ElectricTransmission";
+                string tierName = "AC High Voltage";
+                Layer unLayer = await GetLayerByName(MapView.Active.Map, unLayerName);
+                UtilityNetwork utilityNetwork = await GetUNByLayer(unLayer);
+
+                await QueuedTask.Run(() =>
                 {
-                    DomainNetwork domainNetwork = utilityNetworkDefinition.GetDomainNetwork(domainNetworkName);
-                    Tier tier = domainNetwork.GetTier(tierName);
-
-                    using (SubnetworkManager subnetworkManager = utilityNetwork.GetSubnetworkManager())
+                    using (UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition())
                     {
-                        Subnetwork firstCleanSubnetwork = subnetworkManager.GetSubnetworks(tier, SubnetworkStates.Clean).FirstOrDefault();
-                        try
-                        {
-                            if (firstCleanSubnetwork != null)
-                            {
-                                SubnetworkController subnetworkController = firstCleanSubnetwork.GetControllers().First();
-                                subnetworkManager.DisableControllerInEditOperation(subnetworkController.Element);
-                                firstCleanSubnetwork.Update();
+                        DomainNetwork domainNetwork = utilityNetworkDefinition.GetDomainNetwork(domainNetworkName);
+                        Tier tier = domainNetwork.GetTier(tierName);
 
-                                // Redraw map and clear cache
-                                MapView.Active.Redraw(true);
-                            }
-                        }
-                        catch(Exception ex)
+                        using (SubnetworkManager subnetworkManager = utilityNetwork.GetSubnetworkManager())
                         {
-                            MessageBox.Show(ex.Message);
+                            Subnetwork dirtySubnetwork = subnetworkManager.GetSubnetworks(tier, SubnetworkStates.Dirty).FirstOrDefault();
+                            try
+                            {
+                                if (dirtySubnetwork != null)
+                                {
+                                    SubnetworkController subnetworkController = dirtySubnetwork.GetControllers().First();
+                                    subnetworkManager.DisableControllerInEditOperation(subnetworkController.Element);
+                                    utilityNetwork.ValidateNetworkTopologyInEditOperation();
+                                    dirtySubnetwork.Update();
+
+                                    // Redraw map and clear cache
+                                    MapView.Active.Redraw(true);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
+                            }
+
                         }
-                        
                     }
-                }
-                // utilityNetwork.ValidateNetworkTopology();
-            });
+                    // utilityNetwork.ValidateNetworkTopology();
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An exception occurred: {ex.Message}");
+            }
+            
         }
 
         public Task<Layer> GetLayerByName(Map map, string name)

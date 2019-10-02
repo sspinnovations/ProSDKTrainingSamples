@@ -23,9 +23,16 @@ namespace TrainingSamples
     {
         protected override async void OnClick()
         {
-            string unLayerName = "Electric Utility Network";
-            Layer unLayer = await GetLayerByName(MapView.Active.Map, unLayerName);
-            UtilityNetwork utilityNetwork = await GetUNByLayer(unLayer);
+            try
+            {
+                string unLayerName = "Electric Utility Network";
+                Layer unLayer = await GetLayerByName(MapView.Active.Map, unLayerName);
+                UtilityNetwork utilityNetwork = await GetUNByLayer(unLayer);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An exception occurred: {ex.Message}");
+            }
         }
 
         public Task<Layer> GetLayerByName(Map map, string name)
